@@ -165,7 +165,7 @@ STAT_TRANSLATIONS = {
     "tc": {
         "Height": "身高",
         "Intellect": "智力",
-        "Life Exp": "人生經驗",
+        "Life Expectancy": "壽命預期",
         "Strength": "力量",
         "Weight": "體重",
         "Adaptability": "適應力",
