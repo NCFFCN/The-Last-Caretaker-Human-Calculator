@@ -169,9 +169,9 @@ def normalize_inventory(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    human_file = resolve_existing_file(["Humans.csv", "humans.csv", "Human.csv", "human.csv"])
+    human_file = resolve_existing_file(["Human.csv", "human.csv", "Humans.csv", "humans.csv"])
     food_file = resolve_existing_file(["Food.csv", "food.csv", "Foods.csv", "foods.csv"])
-    memory_file = resolve_existing_file(["Memories.csv", "memories.csv", "Memory.csv", "memory.csv"])
+    memory_file = resolve_existing_file(["Memory.csv", "memory.csv", "Memories.csv", "memories.csv"])
     inventory_file = resolve_existing_file(
         ["Inventory.csv", "inventory.csv", "Inventories.csv", "inventories.csv"]
     )
@@ -186,7 +186,7 @@ def load_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]
     missing = []
     for _, path in files.items():
         if not path or not os.path.exists(path):
-            missing.append(path if path else "Inventory.csv or inventory.csv")
+            missing.append(path if path else "Inventory.csv, Food.csv, Memories.csv, Humans.csv")
 
     if missing:
         print(t("missing_files", files=", ".join(missing)))
