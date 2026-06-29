@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 from dataclasses import dataclass
@@ -38,7 +39,7 @@ ALL_STAT_COLS = [
 UNLIMITED_SEARCH = True
 MAX_ATTEMPTS = 10
 
-# Setting to True will save the updated inventory to a new file named "Inventory2.csv" instead of overwriting the original inventory file.
+# Setting to True will save the updated inventory to a new file named with a timestamp instead of overwriting the original inventory file.
 SAVE_AS_NEW_FILE = True
 
 BIG_M = 10000
@@ -359,7 +360,7 @@ def save_inventory(inventory_df: pd.DataFrame, used_counts: dict, output_path: s
     if not SAVE_AS_NEW_FILE:
         output_path = "Inventory.csv"
     else:
-        output_path = "Inventory2.csv"
+        output_path = f"Inventory2_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
     updated.to_csv(output_path, sep=";", index=False)
 
