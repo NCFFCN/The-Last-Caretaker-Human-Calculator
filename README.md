@@ -1,17 +1,13 @@
 # The Last Caretaker Human Calculator
 
-A small CLI tool for solving lineage-style profession combinations in **The Last Caretaker**.  
-It reads profession, food, memory, and inventory data from CSV files, then uses a linear optimization model with integer decision variables to search for a pure combination of items that satisfies a target profession while avoiding unwanted collateral professions.
+A small CLI tool for solving lineage-style profession combinations in **The Last Caretaker**. It reads profession, food, memory, and inventory CSV files, then uses an integer linear optimization model to search for a valid item combination for a target profession while avoiding unwanted collateral professions.
 
-## Project Files
+## CSV Files
 
-- Human data: `Humans.csv`
-- Food data: `Food.csv`
-- Memory data: `Memories.csv`
-- Inventory data: `Inventory.csv`
-- Main script: `main.py`
-- Translation settings: `translations.py`
-- Python dependencies: `requirements.txt`
+- Human data: `Human.csv` or `human.csv` or `Humans.csv` or `humans.csv`.
+- Food data: `Food.csv` or `food.csv` or `Foods.csv` or `foods.csv`.
+- Memory data: `Memory.csv` or `memory.csv` or `Memories.csv` or `memories.csv`.
+- Inventory data: `Inventory.csv` or `inventory.csv` or `Inventories.csv` or `inventories.csv`.
 
 ## Requirements
 
@@ -21,7 +17,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-The current dependency list contains `numpy`, `pandas`, and `pulp`.
+The current dependency list includes `numpy`, `pandas`, and `pulp`.
 
 ## Usage
 
@@ -33,41 +29,68 @@ python main.py
 
 At the prompt, you can:
 
-- Enter a profession name such as `Guardian of Humanity T4` or `Guard T2`.
-- Type `list` to show all available professions.
-- Type `q` to quit.
+- Enter a profession name such as `Guardian of Humanity T4` or `Guardian of Humanity`.
+- Enter multiple targets separated by commas, for example: `Guard T2, Site Guardian T3` or `Guard, Site Guardian`.
+- Type `list` to show all available professions grouped by category.
+- Type `q` to quit the program.
 
 Example:
 
 ```text
 Enter Target Profession (or 'list' to see all, 'q' to quit): Guard T2
 ```
+```text
+Enter Target Profession (or 'list' to see all, 'q' to quit): Guard, Site Guardian
+```
+```text
+請輸入目標職業 (或輸入「list」查看全部, 輸入「q」退出): 量子工程師
+```
 
-## How It Works
+Note: Profession name should be entered in the display language set in `main.py` (English, Traditional Chinese, or Simplified Chinese).
 
-The program loads profession data from `Humans.csv`, item stat data from `Food.csv` and `Memories.csv`, and availability data from `Inventory.csv`.  
-It normalizes the CSV columns, filters inventory by item kind, and only keeps food or memory items with a positive `inventory_count` before solving.
+## Search logic
 
-The solver builds a PuLP minimization model with integer variables for item counts.  
-The objective minimizes a weighted combination of total priority cost first, then total item count, and finally excess stats above the target requirements.
+The solver prioritizes:
 
-For each candidate solution, the program checks which professions would be triggered by the resulting stats and rejects solutions that produce professions outside the allowed lineage for the target.  
-When a failed combination is found, the solver adds another constraint and continues searching for an alternative combination.
+1. Lower priority cost
+2. Fewer total items
+3. Less excess stats
+4. Fewer rejected collateral professions
 
 ## Search Settings
 
-The updated code stores the unlimited-search behavior directly in `main.py` with the local setting `UNLIMITED_SEARCH = True`.  
-The same file also defines `MAX_ATTEMPTS = 10`, but that limit is only used when unlimited search is turned off.
+The search behavior is controlled directly in `main.py`:
 
-The code also supports both `Inventory.csv` and `inventory.csv` when loading the inventory file, which helps avoid filename case issues across environments.
+- `UNLIMITED_SEARCH = False` means the solver stops after a limited number of attempts.
+- `MAX_ATTEMPTS = 20` defines the maximum number of search attempts when unlimited search is disabled.
+- `PRIORITY_WEIGHT` and `ITEM_COUNT_WEIGHT` control how strongly the solver prefers lower-priority-cost and lower-item-count solutions.
+- `BIG_M` is used for exclusion constraints when rejecting failed collateral-profession combinations.
+
+## Inventory Settings
+
+The inventory update behavior is also controlled in `main.py`:
+
+- `DEDUCT_INVENTORY = False` means successful combinations do not modify the inventory file.
+- `SAVE_AS_NEW_FILE = True` means that when inventory deduction is enabled, the updated inventory is saved to a new timestamped CSV file instead of overwriting the original file.
+
+The loader also supports filename variations such as `Inventory.csv` and `inventory.csv`, as well as similar case variations for other CSV inputs.
+
+## Language Support
+
+The display language is controlled by the `LANG` setting in `main.py`:
+
+- `"en"` for English.
+- `"tc"` for Traditional Chinese.
+- `"sc"` for Simplified Chinese.
+
+All translated text are defined in `translations.py`.
 
 ## Notes
 
 - Only items available in the inventory file are considered by the solver.
-- The current build uses `Life Expectancy` in `ALL_STAT_COLS`, so the CSV headers and code need to stay aligned for correct stat matching.
-- The CLI text and translated profession, category, item, and stat labels are defined in `translations.py`.
-- The current implementation includes refactoring for cleaner data loading, normalization, profession evaluation, and solution reporting.
+- The stat list is defined by `ALL_STAT_COLS`, so the CSV headers and code must stay aligned for correct matching.
+- Profession name input supports translated names and partial matching without requiring the tier suffix in some cases.
 
 ## AI Disclaimer
 
-This project was created with the assistance of AI tools.
+This project was created with the assistance of AI tools.****
