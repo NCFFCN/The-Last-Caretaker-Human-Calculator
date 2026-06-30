@@ -189,12 +189,13 @@ def normalize_items(df: pd.DataFrame, source_col: str) -> pd.DataFrame:
 
 def normalize_inventory(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
+    df = df.rename(columns={"Category": "inv_category"})
 
     if "Name" in df.columns:
         df["Name"] = df["Name"].astype(str).str.strip()
 
-    if "Kind" in df.columns:
-        df["Kind"] = df["Kind"].astype(str).str.strip().str.lower()
+    if "inv_category" in df.columns:
+        df["inv_category"] = df["inv_category"].astype(str).str.strip().str.lower()
 
     if "Count" in df.columns:
         df["Count"] = pd.to_numeric(df["Count"], errors="coerce").fillna(0).astype(int)
