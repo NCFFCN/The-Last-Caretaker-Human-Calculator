@@ -62,7 +62,7 @@ Enter Target Profession (or 'help' to see full command): ?Guard T2, Site Guardia
 ```
 In this mode, the solver will ignore the current inventory state and calculate the optimal combination for each target as if all items were available, without deducting them for the next target.
 
-## The professions needed by each committee
+## Professionals required by each committee
 
 Deck operations
 ```
