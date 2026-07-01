@@ -1,6 +1,8 @@
+<b>English</b></span> | <a href="README_tc.md"><b>繁體中文</b></a></span> | <a href="README_sc.md"><b>简体中文</b></a></span>
+
 # The Last Caretaker Human Calculator
 
-A small CLI tool for solving lineage-style profession combinations in **The Last Caretaker**. It reads profession, food, memory, and inventory CSV files, then uses an integer linear optimization model to search for a valid item combination for a target profession while avoiding unwanted collateral professions.
+A small CLI tool for solving profession combinations in **The Last Caretaker**. It uses an integer linear optimization model to search for a valid item combination for a target profession while avoiding unwanted collateral professions.
 
 ## CSV Files
 
@@ -34,83 +36,84 @@ At the prompt, you can:
 - Type `list` to show all available professions grouped by category.
 - Type `q` to quit the program.
 - Type `reload` to reload CSV files
-- Type `help` to see full command.
+- Type `help` to see all command.
 
 Example:
-
-```
+```text
 Enter Target Profession (or 'help' to see full command): Guard T2
 ```
-```
+```text
 Enter Target Profession (or 'help' to see full command): Guard, Site Guardian
 ```
-```
-請輸入目標職業 (或輸入「list」查看全部, 輸入「q」退出): 量子工程師
-```
 
-Note: Profession name should be entered in the display language set in `main.py` (English, Traditional Chinese, or Simplified Chinese).
+Note: The profession name should be entered in the display language set in `main.py` (English, Traditional Chinese, or Simplified Chinese).
 
 ### Independent Calculation Mode (Temporary Inventory)
 
 By default, when you enter multiple targets (e.g., `Guard T2, Site Guardian`), the tool uses a **deductive inventory** approach. This means that if the first target consumes certain items from your inventory, those items are marked as used and are not available for subsequent targets in the same session. This simulates a real-world scenario where you have a limited pool of resources.
 
-If you want to calculate each target **independently** (i.e., assuming an unlimited or fresh inventory for each calculation), prefix your input with a question mark `?`.
+If you want to calculate each target **independently** (i.e., assuming an unlimited or fresh inventory for each calculation), prefix your input with a `?`.
 
 Example:
-```
+```text
 Enter Target Profession (or 'help' to see full command): ?Guard T2, Site Guardian
 ```
-In this mode, the solver will ignore the current inventory state and calculate the optimal combination for each target as if all items were available, without deducting them for the next target.
+
+The prompt will pop out:
+```text
+[System] Independent calculation mode is enabled: Multiple targets entered this time will not deduct inventory from each other.
+```
+In this mode, the calculator ignores temporary inventory and each calculation will target the best combination of current inventory data, as if all items were available, without deducting those items from the next target.
 
 ## Professionals required by each committee
 
 Deck operations
-```
+```text
 Maintenance Engineer, Basic Supplier, Nutrient Handler, Door Jammer
 ```
 
 Habitat Care
-```
+```text
 Room Supervisor, Health Assistant, Teacher, Lab Technician
 ```
 
 Transit & Distribution
-```
+```text
 System Engineer, Distributor, Growth Specialist, Guard
 ```
 
 Power & Security
-```
+```text
 Energy Engineer, Resource Director, Station Quartermaster, Station Protector
 ```
 
 Cognitive Resilience
-```
+```text
 Theoretical Scientist, Neuro Specialist, Professor, Star Analyzer
 ```
 
 Culture & Memory
-```
+```text
 Visual Technician, Sculptor, Cultural Archivist, Manual Holder
 ```
 
 Governance & Logistics
-```
+```text
 Settlement Governor, Logistics High Command, Biosphere Director, Guardian of Humanity
 ```
 
 Deep Systems
-```
+```text
 Quantum Engineer, Quantum Physicist, Neural Architect, Sustenance Architect
 ```
 
 Meaning & Frontier
-```
+```text
 Existential Expressionist, Frontier Explorer, Mission Seeker, Colonel of Humanity
 ```
 
 Field Continuance
-```
+```text
 Field Research Scientist, Existential Chancellor, Station Roamer, Doctor
 ```
 
@@ -118,28 +121,26 @@ Field Research Scientist, Existential Chancellor, Station Roamer, Doctor
 
 The solver prioritizes:
 
-1. Custom item priority (like Ash Book = 3 and Teddy Bear = 1)
+1. Custom item priority (e.g.: Teddy Bear = 1, Ash Book = 3)
 2. Total items count
-3. Total excess stats
-4. Total rejected collateral professions
+3. Remaining stats exceed the total
+4. It can create different category of profession.
 
 ## Search Settings
 
 The search behavior is controlled directly in `main.py`:
 
-- `UNLIMITED_SEARCH = False` means the solver stops after a limited number of attempts.
-- `MAX_ATTEMPTS = 20` defines the maximum number of search attempts when unlimited search is disabled.
+- `UNLIMITED_SEARCH`: Indicates whether the calculator searches indefinitely. (Default: `False`)
+- `MAX_ATTEMPTS`: Defines the maximum number of search attempts when `UNLIMITED_SEARCH = False`. (Default: `20`)
 - `PRIORITY_WEIGHT` and `ITEM_COUNT_WEIGHT` control how strongly the solver prefers lower-priority-cost and lower-item-count solutions.
-- `BIG_M` is used for exclusion constraints when rejecting failed collateral-profession combinations.
+- `BIG_M` is used to exclude combinations of professions that are not of the same category.
 
 ## Inventory Settings
 
 The inventory update behavior is also controlled in `main.py`:
 
-- `DEDUCT_INVENTORY = False` means successful combinations do not modify the inventory file.
-- `SAVE_AS_NEW_FILE = True` means that when inventory deduction is enabled, the updated inventory is saved to a new timestamped CSV file instead of overwriting the original file.
-
-The loader also supports filename variations such as `Inventory.csv` and `inventory.csv`, as well as similar case variations for other CSV inputs.
+- `DEDUCT_INVENTORY`: Indicates whether the inventory file will be modified after a successful combination is found. (Default: `False`)
+- `SAVE_AS_NEW_FILE`: Indicates that when `DEDUCT_INVENTORY = True`, the updated inventory will be saved to a new CSV file with a timestamp, instead of overwriting the original file. (Default: `True`)
 
 ## Language Support
 
@@ -155,8 +156,3 @@ All translated text are defined in `translations.py`.
 
 - Only items available in the inventory file are considered by the solver.
 - The stat list is defined by `ALL_STAT_COLS`, so the CSV headers and code must stay aligned for correct matching.
-- Profession name input supports translated names and partial matching without requiring the tier suffix in some cases.
-
-## AI Disclaimer
-
-This project was created with the assistance of AI tools.****

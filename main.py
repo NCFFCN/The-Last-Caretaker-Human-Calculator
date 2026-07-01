@@ -31,7 +31,7 @@ ALL_STAT_COLS = [
     "Logic",
     "Patience",
     "Wisdom",
-    "Star Child"
+    "Star Child",
 ]
 
 LANG = "en"  # Display language. "en" for English, "tc" for Traditional Chinese, "sc" for Simplified Chinese.
@@ -249,7 +249,7 @@ def apply_inventory(items_df: pd.DataFrame, inventory_df: pd.DataFrame, category
         return result
 
     inv = inventory_df.copy()
-    
+
     inv = inv[inv["inv_category"] == category_filter.lower()]
 
     items_df_temp = items_df.copy()
@@ -261,7 +261,7 @@ def apply_inventory(items_df: pd.DataFrame, inventory_df: pd.DataFrame, category
     merged["available"] = merged["Count"] > 0
     merged["inv_category"] = category_filter.lower()
     merged = merged.drop(columns=["_match_name"])
-    
+
     return merged[merged["available"]].copy()
 
 
@@ -269,7 +269,7 @@ def get_tier(prof_name: str) -> int:
     match = re.search(r"\bT([1-5])\b", prof_name, re.IGNORECASE)
     if match:
         return int(match.group(1))
-    
+
     return 5
 
 
@@ -708,14 +708,14 @@ def build_summary_sections(summary: dict) -> dict:
     return {
         "title": [display_profession_name(target_info.name)],
         "divider": ["-" * 30],
-        "foods_title": [f"{t('foods')}"],
+        "foods_title": [t("foods")],
         "foods": summary["food_items"] if summary["food_items"] else [" - None"],
-        "memories_title": [f"\n{t('memories')}"],
+        "memories_title": [t("memories")],
         "memories": summary["memory_items"] if summary["memory_items"] else [" - None"],
-        "items": [f"\n{t("items", count=summary["total_items_count"])}"],
-        "stats_title": [f"\n{t('stats')}"],
+        "items": [t("items", count=summary["total_items_count"])],
+        "stats_title": [t("stats")],
         "stats": stats_lines if stats_lines else [" - None"],
-        "buildable_title": [f"\n{t('buildable')}"],
+        "buildable_title": [t("buildable")],
         "buildable": buildable_lines if buildable_lines else [" - None"],
     }
 
@@ -766,10 +766,13 @@ def print_summary(summary_results: List[dict]):
         chunk = all_sections[i : i + SUMMARY_ITEMS_PER_ROW]
 
         print("")
-        for section_name in ordered_section_names:
+        for idx, section_name in enumerate(ordered_section_names):
             render_parallel_section(section_name, chunk, block_width, gap)
 
-        print("\n" + "." * ((block_width + gap) * len(chunk)))
+            if section_name in ["divider", "foods", "memories", "items", "stats"]:
+                print("")
+
+        print("." * ((block_width + gap) * len(chunk)))
 
 
 def print_profession_list(prof_df: pd.DataFrame):
